@@ -24,10 +24,10 @@ clean:
 	rm -f $(EE_BIN) $(EE_OBJS)
 
 run: $(EE_BIN)
-	ps2client -h 192.168.1.10 execee host:$(EE_BIN)
+	ps2client -h 192.168.1.150 execee host:$(EE_BIN)
 
 reset:
-	ps2client -h 192.168.1.10 reset
+	ps2client -h 192.168.1.150 reset
 
 sim: $(EE_BIN)
 	PCSX2 --elf=$(PWD)/$(EE_BIN)

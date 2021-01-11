@@ -126,7 +126,7 @@ void rendering_finished(void)
 void init(void)
 {
     // load the font
-    tsLoadFont();
+    // tsLoadFont();
 
     glClearColor(0.3f, 0.3f, 0.4f, 0.0f);
 
@@ -489,7 +489,7 @@ void draw_cylinder_quadstrips(void)
 
 void draw_text()
 {
-    glLoadIdentity();
+    // glLoadIdentity();
 
     char buffer[1024];
 
@@ -515,9 +515,10 @@ void draw_text()
         renderer_name,
         display_time, render_time);
 
-    tsDrawString(buffer);
+    // tsDrawString(buffer);
+    printf(buffer);
 
-    glDisable(GL_TEXTURE_2D);
+    // glDisable(GL_TEXTURE_2D);
 }
 
 //  #include "ps2s/utils.h"
@@ -530,7 +531,7 @@ void display(void)
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    tsResetCursor();
+    // tsResetCursor();
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
