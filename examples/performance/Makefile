@@ -1,7 +1,8 @@
 EE_BIN       = performance.elf
 EE_CFLAGS   := -I$(PS2SDK)/ports/include -I../shared_code/ $(EE_CFLAGS)
 EE_CXXFLAGS := -I$(PS2SDK)/ports/include -I../shared_code/ $(EE_CXXFLAGS)
-EE_OBJS      = performance.o ../shared_code/text_stuff.o
+EE_OBJS      = performance.o 
+# ../shared_code/text_stuff.o
 EE_LDFLAGS  += -L$(PS2SDK)/ports/lib -L$(PS2DEV)/gsKit/lib
 EE_LIBS      = -lps2glut -lps2gl -lps2stuff -lpad -ldma -lgs -lpacket -lgraph -lgskit -ldmakit
 
@@ -24,10 +25,10 @@ clean:
 	rm -f $(EE_BIN) $(EE_OBJS)
 
 run: $(EE_BIN)
-	ps2client -h 192.168.1.10 execee host:$(EE_BIN)
+	ps2client -h 192.168.1.150 execee host:$(EE_BIN)
 
 reset:
-	ps2client -h 192.168.1.10 reset
+	ps2client -h 192.168.1.150 reset
 
 sim: $(EE_BIN)
 	PCSX2 --elf=$(PWD)/$(EE_BIN)

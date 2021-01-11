@@ -29,3 +29,18 @@ jobs:
     - name: Compile GLUT
       run: |
         cd glut && make clean all install
+    
+    - name: Compile BOX example
+      run: |
+        cd examples/box && make clean all
+
+    - name: Get short SHA
+      id: slug
+      run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
+
+    - name: Upload artifacts
+      if: ${{ success() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: box-${{ steps.slug.outputs.sha8 }}
+        path: examples/box/box.elf
