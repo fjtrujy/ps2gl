@@ -200,8 +200,8 @@ void display(void)
     glLoadIdentity();
 
     tsDrawString("Wow! A cube!\n");
-    tsDrawString("Left D-Pad rotates the camera\n");
-    tsDrawString("R1 and R2 move in and out\n");
+    //tsDrawString("Left D-Pad rotates the camera\n");
+    //tsDrawString("R1 and R2 move in and out\n");
     glDisable(GL_TEXTURE_2D);
 
     glFlush();
