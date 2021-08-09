@@ -11,6 +11,7 @@
 #include "GL/gl.h"
 #include "GL/glut.h"
 
+#include "teapot.c"
 #include "text_stuff.h"
 
 /********************************************
@@ -32,8 +33,9 @@ void special(int key, int x, int y);
  * static data
  */
 
-static float camera_z = 5.0f, camera_alt = 0.0f, camera_azi = 0.0f;
+static float camera_z = 100.0f, camera_alt = 0.0f, camera_azi = 0.0f;
 static float spin_angle = 0.0f;
+static int draw_list    = -1;
 
 /********************************************
  * code
@@ -61,14 +63,19 @@ void init(void)
     // load the font
     tsLoadFont();
 
-    //glShadeModel(GL_SMOOTH);
-    glShadeModel(GL_FLAT);
+    glShadeModel(GL_SMOOTH);
+    //glShadeModel(GL_FLAT);
     glClearColor(0.3f, 0.3f, 0.4f, 0.0f);
 
     glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_RESCALE_NORMAL);
+    glEnable(GL_RESCALE_NORMAL);
 
-    //init_lights();
+    init_lights();
+
+    draw_list = glGenLists(1);
+    glNewList(draw_list, GL_COMPILE);
+    draw_cube();
+    glEndList();
 }
 
 static GLfloat l0_position[] = { -1, 0.9f, 0.9f, 0 };
@@ -113,6 +120,17 @@ void set_light_positions()
 
 void draw_cube(void)
 {
+#if 1
+    glBegin(GL_TRIANGLES);
+    for (int i = 0; i < points_count; i++) {
+        int p = points[i];
+        glNormal3f(normals[p].x, normals[p].y, normals[p].z);
+        //glColor3f(colours[p].x, colours[p].y, colours[p].z);
+        glVertex3f(vertices[p].x, vertices[p].y, vertices[p].z);
+    }
+    glEnd();
+#endif
+
 #if 0
     // Triangle from NeHe tutorials
     // "Loading renderer: linear, tris, no specular"
@@ -130,7 +148,7 @@ void draw_cube(void)
     glEnd();
 #endif
 
-#if 1
+#if 0
     // Quad from NeHe tutorials
     // "Loading renderer: linear, quads, no specular"
     // Works
@@ -238,22 +256,26 @@ void display(void)
     tsResetCursor();
 
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    for (int y = 0; y < 3; y++) {
+        for (int x = 0; x < 3; x++) {
+            glLoadIdentity();
 
-    // camera transform
+            // camera transform
 
-    glTranslatef(0, 0, -camera_z);
-    glRotatef(camera_azi, 0, 1, 0);
-    glRotatef(camera_alt, -1, 0, 0);
+            glTranslatef((x - 1) * 40, (y - 1) * 30 - 10, -150);
+            glRotatef(camera_azi, 0, 1, 0);
+            glRotatef(camera_alt, -1, 0, 0);
 
-    //set_light_positions();
+            set_light_positions();
 
-    // object space transforms
+            // object space transforms
 
-    glRotatef(spin_angle, 0, 1, 0);
+            glRotatef(spin_angle, 0, 1, 0);
+
+            glCallList(draw_list);
+        }
+    }
     spin_angle += 0.15f;
-
-    draw_cube();
 
     glLoadIdentity();
 
