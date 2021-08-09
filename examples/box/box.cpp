@@ -61,12 +61,14 @@ void init(void)
     // load the font
     tsLoadFont();
 
+    //glShadeModel(GL_SMOOTH);
+    glShadeModel(GL_FLAT);
     glClearColor(0.3f, 0.3f, 0.4f, 0.0f);
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_RESCALE_NORMAL);
+    //glEnable(GL_RESCALE_NORMAL);
 
-    init_lights();
+    //init_lights();
 }
 
 static GLfloat l0_position[] = { -1, 0.9f, 0.9f, 0 };
@@ -111,6 +113,61 @@ void set_light_positions()
 
 void draw_cube(void)
 {
+#if 0
+    // Triangle from NeHe tutorials
+    // "Loading renderer: linear, tris, no specular"
+    // Works, but color not visible?
+    glNormal3f(0, 0, 1);
+    glBegin(GL_TRIANGLES);
+    {
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex3f(0.0f, 1.0f, 0.0f);
+        glColor3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(-1.0f, -1.0f, 0.0f);
+        glColor3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(1.0f, -1.0f, 0.0f);
+    }
+    glEnd();
+#endif
+
+#if 1
+    // Quad from NeHe tutorials
+    // "Loading renderer: linear, quads, no specular"
+    // Works
+    glNormal3f(0, 0, 1);
+    glColor3f(0.5f,0.5f,1.0f);
+    glBegin(GL_QUADS);
+    {
+        glVertex3f(-1.0f, 1.0f, 0.0f);
+        glVertex3f(1.0f, 1.0f, 0.0f);
+        glVertex3f(1.0f, -1.0f, 0.0f);
+        glVertex3f(-1.0f, -1.0f, 0.0f);
+    }
+    glEnd();
+#endif
+
+#if 0
+    // Loading renderer: scei
+    // Works, but color not visible?
+    glBegin(GL_TRIANGLE_STRIP);
+    {
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex3f(0.2, 0.2, 0.0);
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex3f(0.8, 0.2, 0.0);
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glVertex3f(0.2, 0.5, 0.0);
+        glColor3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(0.8, 0.5, 0.0);
+        glColor3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(0.2, 0.8, 0.0);
+        glColor3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(0.8, 0.8, 0.0);
+    }
+    glEnd();
+#endif
+
+#if 0
     static float points[8][3] = {
         { -1, 1, -1 },
         { -1, 1, 1 },
@@ -171,6 +228,7 @@ void draw_cube(void)
         glVertex3fv(points[0]);
     }
     glEnd();
+#endif
 }
 
 void display(void)
@@ -188,7 +246,7 @@ void display(void)
     glRotatef(camera_azi, 0, 1, 0);
     glRotatef(camera_alt, -1, 0, 0);
 
-    set_light_positions();
+    //set_light_positions();
 
     // object space transforms
 
@@ -199,7 +257,7 @@ void display(void)
 
     glLoadIdentity();
 
-    tsDrawString("Wow! A cube!\n");
+    //tsDrawString("Wow! A cube!\n");
     //tsDrawString("Left D-Pad rotates the camera\n");
     //tsDrawString("R1 and R2 move in and out\n");
     glDisable(GL_TEXTURE_2D);
