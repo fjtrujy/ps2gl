@@ -79,7 +79,7 @@ static light_t lights[8] = {
     { { .4f, .4f, 1, 0 }, { 1, -1, -1, 0 } },
 };
 
-static int cur_prim = 4, num_prims = 8;
+static int cur_prim = 3, num_prims = 8;
 typedef void (*prim_draw_func_t)(void);
 typedef struct {
     prim_draw_func_t draw_func;
@@ -498,7 +498,7 @@ void draw_text()
     float render_time  = (float)render_ticks / frame_ticks * 100.0f;
 
     sprintf(buffer,
-        "%d directional lights (up/down modifies)\n"
+        "\n\n%d directional lights (up/down modifies)\n"
         "%d point lights       (right/left modifies)\n"
         "primitive is %s\n"
         "current renderer is \"%s\"\n"
@@ -515,7 +515,8 @@ void draw_text()
         renderer_name,
         display_time, render_time);
 
-    tsDrawString(buffer);
+    //tsDrawString(buffer);
+    printf(buffer);
 
     glDisable(GL_TEXTURE_2D);
 }
@@ -559,10 +560,13 @@ void display(void)
 
     glFlush();
 
-    strncpy(renderer_name, pglGetCurRendererName(), 64);
-    //     printf("renderer = %s\n", renderer_name );
-
-    draw_text();
+    static int ifc = 0;
+    ifc++;
+    if (ifc >= 60) {
+        ifc = 0;
+        strncpy(renderer_name, pglGetCurRendererName(), 64);
+        draw_text();
+    }
 
     //     float *material = (float*)Core::MemMappings::VU1Data + kMaterialEmission * 4;
     //     Utils::QwordFloatDump( material, 4 );
@@ -620,6 +624,9 @@ void key(unsigned char k, int x, int y)
 void inc_dir_lights()
 {
     if (num_dir_lights < 8) {
+        if (num_dir_lights + num_pt_lights == 0)
+            glEnable(GL_LIGHTING);
+
         num_dir_lights++;
 
         glEnable(GL_LIGHT0 + num_dir_lights - 1);
@@ -639,12 +646,17 @@ void dec_dir_lights()
     if (num_dir_lights > 0) {
         glDisable(GL_LIGHT0 + (num_dir_lights - 1));
         num_dir_lights--;
+        if (num_dir_lights + num_pt_lights == 0)
+            glDisable(GL_LIGHTING);
     }
 }
 
 void inc_pt_lights()
 {
     if (num_pt_lights < 8) {
+        if (num_dir_lights + num_pt_lights == 0)
+            glEnable(GL_LIGHTING);
+
         num_pt_lights++;
 
         glEnable(GL_LIGHT0 + (8 - num_pt_lights));
@@ -664,6 +676,8 @@ void dec_pt_lights()
     if (num_pt_lights > 0) {
         glDisable(GL_LIGHT0 + (8 - num_pt_lights));
         num_pt_lights--;
+        if (num_dir_lights + num_pt_lights == 0)
+            glDisable(GL_LIGHTING);
     }
 }
 
