@@ -44,7 +44,7 @@ void special(int key, int x, int y);
  * static data
  */
 
-static float camera_z = 5.0f, camera_alt = 30, camera_azi = 0.0f;
+static float camera_z = 40.0f, camera_alt = 30, camera_azi = 0.0f;
 
 static float *cylinder_points = NULL, *cylinder_normals = NULL;
 static int cylinder_layers = 40, cylinder_slices = 40;
@@ -534,25 +534,31 @@ void display(void)
     tsResetCursor();
 
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    // camera transform
-
-    glTranslatef(0, 0, -camera_z);
-    glRotatef(camera_azi, 0, 1, 0);
-    glRotatef(camera_alt, 1, 0, 0);
-
-    set_light_positions();
-
-    // object space transforms
-
     glDepthMask(GL_FALSE);
     glEnable(GL_BLEND);
     if (wireframe)
         glPolygonMode(GL_FRONT, GL_LINE);
 
-    // (prim_entries[cur_prim].draw_func)();
-    glCallList(cylinder_list);
+    for (int y = 0; y < 9; y++) {
+        for (int x = 0; x < 13; x++) {
+            if ((y*13+x) > 104)
+                break;
+
+            glLoadIdentity();
+
+            // camera transform
+
+            glTranslatef((x - 6) * 3, (y - 4) * 3, -camera_z);
+            glRotatef(camera_azi, 0, 1, 0);
+            glRotatef(camera_alt, -1, 0, 0);
+
+            set_light_positions();
+
+            // object space transforms
+
+            glCallList(cylinder_list);
+        }
+    }
 
     glPolygonMode(GL_FRONT, GL_FILL);
     glDisable(GL_BLEND);
