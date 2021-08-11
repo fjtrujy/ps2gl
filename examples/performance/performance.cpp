@@ -58,6 +58,9 @@ static bool wireframe = false, clipping = true;
 
 static int cylinder_list = -1;
 
+static int vertices  = 0;
+static int cylinders = 1;
+
 // lights
 
 static int num_dir_lights = 0, num_pt_lights = 0;
@@ -219,6 +222,7 @@ void init_cylinder()
 
 void draw_cylinder_points(void)
 {
+    vertices = 0;
     glBegin(GL_POINTS);
     {
         for (int layer = 0; layer < (cylinder_layers - 1); layer++) {
@@ -238,6 +242,8 @@ void draw_cylinder_points(void)
                 glVertex3fv(bottom_point);
                 bottom_point += 3;
                 bottom_normal += 3;
+
+                vertices += 2;
             }
         }
     }
@@ -246,6 +252,7 @@ void draw_cylinder_points(void)
 
 void draw_cylinder_lines(void)
 {
+    vertices = 0;
     glBegin(GL_LINES);
     {
 
@@ -262,6 +269,8 @@ void draw_cylinder_lines(void)
 
                 glNormal3fv(cur_normal);
                 glVertex3fv(cur_point);
+
+                vertices += 2;
             }
         }
     }
@@ -270,6 +279,7 @@ void draw_cylinder_lines(void)
 
 void draw_cylinder_linestrips(void)
 {
+    vertices = 0;
     for (int layer = 0; layer < cylinder_layers; layer++) {
 
         float *cur_point  = cylinder_points + layer * cylinder_slices * 3,
@@ -282,6 +292,8 @@ void draw_cylinder_linestrips(void)
                 glVertex3fv(cur_point);
                 cur_point += 3;
                 cur_normal += 3;
+
+                vertices += 1;
             }
         }
         glEnd();
@@ -290,6 +302,7 @@ void draw_cylinder_linestrips(void)
 
 void draw_cylinder_tris(void)
 {
+    vertices = 0;
     for (int layer = 0; layer < (cylinder_layers - 1); layer++) {
 
         float *bottom_point  = cylinder_points + layer * cylinder_slices * 3,
@@ -323,6 +336,7 @@ void draw_cylinder_tris(void)
                     glNormal3fv(bottom_normal);
                     glVertex3fv(bottom_point);
                 }
+                vertices += 3;
             }
         }
         glEnd();
@@ -331,6 +345,7 @@ void draw_cylinder_tris(void)
 
 void draw_cylinder_tristrip(void)
 {
+    vertices = 0;
     for (int layer = 0; layer < (cylinder_layers - 1); layer++) {
 
         float *bottom_point  = cylinder_points + layer * cylinder_slices * 3,
@@ -350,6 +365,8 @@ void draw_cylinder_tristrip(void)
                 glVertex3fv(bottom_point);
                 bottom_point += 3;
                 bottom_normal += 3;
+
+                vertices += 2;
             }
         }
         glEnd();
@@ -358,6 +375,7 @@ void draw_cylinder_tristrip(void)
 
 void draw_cylinder_fans(void)
 {
+    vertices = 0;
     for (int layer = 0; layer < cylinder_layers - 2; layer += 2) {
 
         float *bottom_point  = cylinder_points + layer * cylinder_slices * 3,
@@ -421,6 +439,8 @@ void draw_cylinder_fans(void)
                 glVertex3fv(bottom_point);
                 bottom_point += 3 * 2;
                 bottom_normal += 3 * 2;
+
+                vertices += 10;
             }
             glEnd();
         }
@@ -429,6 +449,7 @@ void draw_cylinder_fans(void)
 
 void draw_cylinder_quads(void)
 {
+    vertices = 0;
     for (int layer = 0; layer < (cylinder_layers - 1); layer++) {
 
         float *bottom_point  = cylinder_points + layer * cylinder_slices * 3,
@@ -454,6 +475,8 @@ void draw_cylinder_quads(void)
 
                 glNormal3fv(top_normal);
                 glVertex3fv(top_point);
+
+                vertices += 4;
             }
         }
         glEnd();
@@ -462,6 +485,7 @@ void draw_cylinder_quads(void)
 
 void draw_cylinder_quadstrips(void)
 {
+    vertices = 0;
     for (int layer = 0; layer < (cylinder_layers - 1); layer++) {
 
         float *bottom_point  = cylinder_points + layer * cylinder_slices * 3,
@@ -481,6 +505,8 @@ void draw_cylinder_quadstrips(void)
                 glVertex3fv(bottom_point);
                 bottom_point += 3;
                 bottom_normal += 3;
+
+                vertices += 2;
             }
         }
         glEnd();
@@ -509,11 +535,14 @@ void draw_text()
         "\n"
         "L1 toggles wireframe\n"
         "L2 toggles clipping\n"
-        "R1/R2 changes prim type\n",
+        "R1/R2 changes prim type\n"
+        "\n"
+        "%d vertices x %d cylinders = %d vertices / frame\n",
         num_dir_lights, num_pt_lights,
         prim_entries[cur_prim].name,
         renderer_name,
-        display_time, render_time);
+        display_time, render_time,
+        vertices, cylinders, vertices * cylinders);
 
     //tsDrawString(buffer);
     printf(buffer);
@@ -541,7 +570,7 @@ void display(void)
 
     for (int y = 0; y < 9; y++) {
         for (int x = 0; x < 13; x++) {
-            if ((y*13+x) > 104)
+            if ((y * 13 + x) >= cylinders)
                 break;
 
             glLoadIdentity();
@@ -607,10 +636,24 @@ void reshape(int w, int h)
 
 void key(unsigned char k, int x, int y)
 {
+    static int slowdown = 0;
+
     switch (k) {
     case '8':
+        slowdown++;
+        if (slowdown >= 30) {
+            slowdown = 0;
+            if (cylinders < (13 * 9))
+                cylinders++;
+        }
         break;
     case '2':
+        slowdown++;
+        if (slowdown >= 30) {
+            slowdown = 0;
+            if (cylinders > 1)
+                cylinders--;
+        }
         break;
     case '4':
         camera_azi -= 2;
