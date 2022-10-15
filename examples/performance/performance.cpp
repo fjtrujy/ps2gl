@@ -34,6 +34,7 @@ void draw_cylinder_tristrip(void);
 void draw_cylinder_fans(void);
 void draw_cylinder_quads(void);
 void draw_cylinder_quadstrips(void);
+void draw_cylinder_index(void);
 
 void display(void);
 void reshape(int w, int h);
@@ -59,7 +60,7 @@ static bool wireframe = false, clipping = true;
 static int cylinder_list = -1;
 
 static int vertices  = 0;
-static int cylinders = 1;
+static int cylinders = 18;
 
 // lights
 
@@ -82,14 +83,14 @@ static light_t lights[8] = {
     { { .4f, .4f, 1, 0 }, { 1, -1, -1, 0 } },
 };
 
-static int cur_prim = 3, num_prims = 8;
+static int cur_prim = 3, num_prims = 9;
 typedef void (*prim_draw_func_t)(void);
 typedef struct {
     prim_draw_func_t draw_func;
     const char* name;
 } prim_entry_t;
 
-prim_entry_t prim_entries[8] = {
+prim_entry_t prim_entries[9] = {
     { draw_cylinder_points, "GL_POINTS" },
     { draw_cylinder_lines, "GL_LINES" },
     { draw_cylinder_linestrips, "GL_LINE_STRIP" },
@@ -97,7 +98,8 @@ prim_entry_t prim_entries[8] = {
     { draw_cylinder_tristrip, "GL_TRIANGLE_STRIP" },
     { draw_cylinder_fans, "GL_TRIANGLE_FAN" },
     { draw_cylinder_quads, "GL_QUADS" },
-    { draw_cylinder_quadstrips, "GL_QUAD_STRIP" }
+    { draw_cylinder_quadstrips, "GL_QUAD_STRIP" },
+    { draw_cylinder_index, "index" }
 };
 
 /********************************************
@@ -511,6 +513,33 @@ void draw_cylinder_quadstrips(void)
         }
         glEnd();
     }
+}
+
+void draw_cylinder_index(void)
+{
+    static unsigned char index[256];
+
+    for (int i = 0; i < 256; i++)
+        index[i] = i;
+
+    vertices = cylinder_layers * cylinder_slices;
+
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_VERTEX_ARRAY);
+
+    float *point = cylinder_points, *normal = cylinder_normals;
+    int vdone = 0;
+    //while (vdone < vertices) {
+        int vdo = 128;//vertices - vdone;
+        //if (vdo > 40)
+        //    vdo = 40;
+        glNormalPointer(GL_FLOAT, 0, normal);
+        glVertexPointer(3, GL_FLOAT, 0, point);
+        pglDrawIndexedArrays(GL_POINTS, vdo, index, vdo);
+        normal += vdo * 3;
+        point += vdo * 3;
+        vdone += vdo;
+    //}
 }
 
 void draw_text()

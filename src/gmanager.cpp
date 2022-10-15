@@ -53,7 +53,7 @@ CGeomManager::CGeomManager(CGLContext& context)
     , LastArrayAccessIsValid(false)
     , UserRenderContextChanged(false)
 {
-    for (unsigned int i               = 0; i < kMaxUserPrimTypes; i++)
+    for (unsigned int i = 0; i < kMaxUserPrimTypes; i++)
         UserPrimTypes[i].requirements = 0xffffffff;
 }
 
@@ -440,6 +440,11 @@ void pglDrawIndexedArrays(GLenum primType,
 {
     pGLContext->GetGeomManager().DrawIndexedArrays(primType, numIndices, indices, numVertices);
 }
+
+//void glDrawElements(GLenum mode, GLsizei count, GLenum type, const void* indices)
+//{
+//    pglDrawIndexedArrays(mode, count, indices, count * ?);
+//}
 
 /**
  * @addtogroup custom_renderers_prims_state
