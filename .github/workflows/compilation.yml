@@ -24,15 +24,15 @@ jobs:
 
     - name: Compile project
       run: |
-        make clean all install
+        make DEBUG=1 && make install
 
     - name: Compile GLUT
       run: |
-        cd glut && make clean all install
+        cd glut && make DEBUG=1 && make install
     
     - name: Compile BOX example
       run: |
-        cd examples/box && make clean all
+        cd examples/box && make DEBUG=1
 
     - name: Get short SHA
       id: slug

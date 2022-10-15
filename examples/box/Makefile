@@ -6,8 +6,8 @@ EE_LDFLAGS  += -L$(PS2SDK)/ports/lib -L$(PS2DEV)/gsKit/lib
 EE_LIBS      = -lps2glut -lps2gl -lps2stuff -lpad -ldma -lgs -lpacket -lgraph -lgskit -ldmakit
 
 ifeq ($(DEBUG), 1)
-    EE_CFLAGS   += -D_DEBUG
-    EE_CXXFLAGS += -D_DEBUG
+    EE_CFLAGS   += -D_DEBUG -g -O0
+    EE_CXXFLAGS += -D_DEBUG -g -O0
 endif
 
 # Disabling warnings
@@ -18,7 +18,6 @@ EE_CFLAGS   += $(WARNING_FLAGS) -DNO_VU0_VECTORS
 EE_CXXFLAGS += $(WARNING_FLAGS) -DNO_VU0_VECTORS
 
 all: $(EE_BIN)
-	$(EE_STRIP) --strip-all $(EE_BIN)
 
 clean:
 	rm -f $(EE_BIN) $(EE_OBJS)
