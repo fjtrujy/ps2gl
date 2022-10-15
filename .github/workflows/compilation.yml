@@ -19,8 +19,9 @@ jobs:
 
     - name: Install ps2stuff
       run: |
-        git clone https://github.com/ps2dev/ps2stuff.git
-        cd ps2stuff && make clean all install
+        git clone https://gitlab.com/ps2max/ps2stuff.git
+        cd ps2stuff && git checkout WIP_20221015
+        make clean all install
 
     - name: Compile project
       run: |
