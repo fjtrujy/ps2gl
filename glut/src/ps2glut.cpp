@@ -111,6 +111,10 @@ void glutInit(int* argcp, char** argv)
         //      sceDmaReset(1);
         //      sceGsResetPath();
 
+        // Reset the GIF. OSDSYS leaves PATH3 busy, that ends up having
+        // our PATH1/2 transfers ignored by the GIF.
+        *GIF::Registers::ctrl = 1;
+
         //      sceGsResetGraph(0, SCE_GS_INTERLACE, SCE_GS_NTSC, SCE_GS_FRAME);
     	SetGsCrt(1 /* interlaced */, 2 /* ntsc */, 1 /* frame */);
 
